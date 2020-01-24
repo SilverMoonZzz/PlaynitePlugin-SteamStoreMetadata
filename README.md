@@ -16,3 +16,8 @@ Installation
 Follow instructions from Playnite's [wiki page](https://github.com/JosefNemec/Playnite/wiki/Installing-scripts-and-plugins). Basically extract downloaded zip file to correct folder.
 
 After installation new `Steam Store` metadata source will be available on metadata download dialogs.
+
+Reporting problems
+---------
+
+If you have some issues then please open [new issues](https://github.com/JosefNemec/PlaynitePlugin-SteamStoreMetadata/issues) item.
