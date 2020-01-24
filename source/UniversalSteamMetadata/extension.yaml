@@ -1,0 +1,6 @@
+﻿Name: Universal Steam Metadata
+Author: Josef Nemec
+Version: 1.0
+Module: UniversalSteamMetadata.dll
+Type: MetadataProvider
+Icon: icon.png
