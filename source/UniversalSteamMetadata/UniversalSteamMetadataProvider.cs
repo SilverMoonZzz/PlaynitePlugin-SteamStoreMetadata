@@ -18,10 +18,15 @@ namespace UniversalSteamMetadata
 {
     public class UniversalSteamMetadataProvider : OnDemandMetadataProvider
     {
+        public class SteamImageOption : ImageFileOption
+        {
+            public string Image { get; set; }
+        }
+
         private static readonly ILogger logger = LogManager.GetLogger();
         private readonly MetadataRequestOptions options;
         private readonly UniversalSteamMetadata plugin;
-        private GameMetadata currentMetadata;
+        private SteamGameMetadata currentMetadata;
 
         public override List<MetadataField> AvailableFields { get; } = new List<MetadataField>
         {
@@ -61,7 +66,32 @@ namespace UniversalSteamMetadata
             GetGameData();
             if (currentMetadata.GameInfo != null)
             {
-                return currentMetadata.BackgroundImage;
+                if (plugin.Settings.BackgroundSource == BackgroundSource.StoreScreenshot &&
+                    options.IsBackgroundDownload == false &&
+                    currentMetadata.StoreDetails?.screenshots?.Count > 1)
+                {
+                    var selection = new List<ImageFileOption>();
+                    foreach (var screen in currentMetadata.StoreDetails.screenshots)
+                    {
+                        selection.Add(new SteamImageOption
+                        {
+                            Path = Regex.Replace(screen.path_thumbnail, "\\?.*$", ""),
+                            Image = Regex.Replace(screen.path_full, "\\?.*$", "")
+                        });
+                    }
+
+                    var selected = plugin.PlayniteApi.Dialogs.ChooseImageFile(
+                        selection,
+                        "selectImage") as SteamImageOption;
+                    if (selected != null)
+                    {
+                        return new MetadataFile(selected.Image);
+                    }
+                }
+                else
+                {
+                    return currentMetadata.BackgroundImage;
+                }
             }
 
             return base.GetBackgroundImage();
@@ -202,7 +232,7 @@ namespace UniversalSteamMetadata
                         }
                         else
                         {
-                            currentMetadata = new GameMetadata();
+                            currentMetadata = new SteamGameMetadata();
                         }
                     }
                     else
@@ -223,7 +253,7 @@ namespace UniversalSteamMetadata
 
                         if (selectedGame == null)
                         {
-                            currentMetadata = new GameMetadata();
+                            currentMetadata = new SteamGameMetadata();
                         }
                         else
                         {
@@ -235,7 +265,7 @@ namespace UniversalSteamMetadata
             catch (Exception e)
             {
                 logger.Error(e, $"Failed to get Steam metadata.");
-                currentMetadata = new GameMetadata();
+                currentMetadata = new SteamGameMetadata();
             }
         }
 

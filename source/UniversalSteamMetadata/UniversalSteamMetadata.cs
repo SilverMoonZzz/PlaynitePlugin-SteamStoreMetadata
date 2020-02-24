@@ -278,7 +278,7 @@ namespace UniversalSteamMetadata
             return description.Replace("%CDN_HOST_MEDIA_SSL%", "steamcdn-a.akamaihd.net");
         }
 
-        internal GameMetadata GetGameMetadata(uint appId)
+        internal SteamGameMetadata GetGameMetadata(uint appId)
         {
             var downloadedMetadata = DownloadGameMetadata(appId);
             var gameInfo = new GameInfo
