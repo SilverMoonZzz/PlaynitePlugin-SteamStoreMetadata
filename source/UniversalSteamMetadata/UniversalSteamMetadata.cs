@@ -50,7 +50,7 @@ namespace UniversalSteamMetadata
             MetadataField.Links,
             MetadataField.Publishers,
             MetadataField.ReleaseDate,
-            MetadataField.Tags
+            MetadataField.Features
         };
 
         public override string Name => "Steam Store";
@@ -229,10 +229,24 @@ namespace UniversalSteamMetadata
             }
 
             // Background Image
+            var bannerBk = string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/library_hero.jpg", appId);
+            var storeBk = string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/page_bg_generated_v6b.jpg", appId);
+
             switch (Settings.BackgroundSource)
             {
                 case BackgroundSource.Image:
-                    metadata.BackgroundImage = new MetadataFile(GetGameBackground(appId));
+                    var bk = GetGameBackground(appId);
+                    if (string.IsNullOrEmpty(bk))
+                    {
+                        if (HttpDownloader.GetResponseCode(bannerBk) == HttpStatusCode.OK)
+                        {
+                            metadata.BackgroundImage = new MetadataFile(bannerBk);
+                        }
+                    }
+                    else
+                    {
+                        metadata.BackgroundImage = new MetadataFile(bk);
+                    }
                     break;
                 case BackgroundSource.StoreScreenshot:
                     if (metadata.StoreDetails != null)
@@ -241,10 +255,16 @@ namespace UniversalSteamMetadata
                     }
                     break;
                 case BackgroundSource.StoreBackground:
-                    metadata.BackgroundImage = new MetadataFile(string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/page_bg_generated_v6b.jpg", appId));
+                    if (HttpDownloader.GetResponseCode(storeBk) == HttpStatusCode.OK)
+                    {
+                        metadata.BackgroundImage = new MetadataFile(storeBk);
+                    }
                     break;
                 case BackgroundSource.Banner:
-                    metadata.BackgroundImage = new MetadataFile(string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/library_hero.jpg", appId));
+                    if (HttpDownloader.GetResponseCode(bannerBk) == HttpStatusCode.OK)
+                    {
+                        metadata.BackgroundImage = new MetadataFile(bannerBk);
+                    }
                     break;
                 default:
                     break;
@@ -313,7 +333,22 @@ namespace UniversalSteamMetadata
 
                 if (downloadedMetadata.StoreDetails.categories.HasItems())
                 {
-                    gameInfo.Tags = new List<string>(downloadedMetadata.StoreDetails.categories.Select(a => cultInfo.ToTitleCase(a.description)));
+                    gameInfo.Features = new List<string>();
+                    foreach (var category in downloadedMetadata.StoreDetails.categories)
+                    {
+                        // Ignore VR category, will be set from appinfo
+                        if (category.id == 31)
+                        {
+                            continue;
+                        }
+
+                        if (category.description == "Steam Cloud")
+                        {
+                            category.description = "Cloud Saves";
+                        }
+
+                        gameInfo.Features.Add(cultInfo.ToTitleCase(category.description.Replace("steam", "", StringComparison.OrdinalIgnoreCase).Trim()));
+                    }
                 }
 
                 if (downloadedMetadata.StoreDetails.genres.HasItems())
@@ -369,6 +404,52 @@ namespace UniversalSteamMetadata
                 }
 
                 gameInfo.OtherActions = tasks;
+
+                // VR features
+                var vrSupport = false;
+                foreach (var vrArea in downloadedMetadata.ProductDetails["common"]["playareavr"].Children)
+                {
+                    if (vrArea.Name == "seated" && vrArea.Value == "1")
+                    {
+                        gameInfo.Features.Add("VR Seated");
+                        vrSupport = true;
+                    }
+                    else if (vrArea.Name == "standing" && vrArea.Value == "1")
+                    {
+                        gameInfo.Features.Add("VR Standing");
+                        vrSupport = true;
+                    }
+                    if (vrArea.Name.Contains("roomscale"))
+                    {
+                        gameInfo.Features.AddMissing("VR Room-Scale");
+                        vrSupport = true;
+                    }
+                }
+
+                foreach (var vrArea in downloadedMetadata.ProductDetails["common"]["controllervr"].Children)
+                {
+                    if (vrArea.Name == "kbm" && vrArea.Value == "1")
+                    {
+                        gameInfo.Features.Add("VR Keyboard / Mouse");
+                        vrSupport = true;
+                    }
+                    else if (vrArea.Name == "xinput" && vrArea.Value == "1")
+                    {
+                        gameInfo.Features.Add("VR Gamepad");
+                        vrSupport = true;
+                    }
+                    if ((vrArea.Name == "oculus" && vrArea.Value == "1") ||
+                        (vrArea.Name == "steamvr" && vrArea.Value == "1"))
+                    {
+                        gameInfo.Features.Add("VR Motion Controllers");
+                        vrSupport = true;
+                    }
+                }
+
+                if (vrSupport)
+                {
+                    gameInfo.Features.Add("VR");
+                }
             }
 
             return downloadedMetadata;

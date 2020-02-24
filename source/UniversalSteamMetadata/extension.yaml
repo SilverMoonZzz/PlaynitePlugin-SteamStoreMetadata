@@ -4,3 +4,6 @@ Version: 1.0
 Module: UniversalSteamMetadata.dll
 Type: MetadataProvider
 Icon: icon.png
+Links:
+    - Name: Website
+      Url: https://github.com/JosefNemec/PlaynitePlugin-SteamStoreMetadata

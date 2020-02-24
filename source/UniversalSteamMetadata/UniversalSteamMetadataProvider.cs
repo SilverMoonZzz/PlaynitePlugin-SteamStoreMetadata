@@ -36,7 +36,7 @@ namespace UniversalSteamMetadata
             MetadataField.Links,
             MetadataField.Publishers,
             MetadataField.ReleaseDate,
-            MetadataField.Tags
+            MetadataField.Features
         };
 
         public UniversalSteamMetadataProvider(MetadataRequestOptions options, UniversalSteamMetadata plugin)
@@ -166,15 +166,15 @@ namespace UniversalSteamMetadata
             return base.GetReleaseDate();
         }
 
-        public override List<string> GetTags()
+        public override List<string> GetFeatures()
         {
             GetGameData();
             if (currentMetadata.GameInfo != null)
             {
-                return currentMetadata.GameInfo.Tags;
+                return currentMetadata.GameInfo.Features;
             }
 
-            return base.GetTags();
+            return base.GetFeatures();
         }
 
         internal void GetGameData()
