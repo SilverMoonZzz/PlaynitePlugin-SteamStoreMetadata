@@ -69,10 +69,11 @@
     <Compile Include="Common\HttpDownloader.cs" />
     <Compile Include="Common\Roman.cs" />
     <Compile Include="Common\StringExtensions.cs" />
-    <Compile Include="Models\SteamGameMetadata.cs" />
-    <Compile Include="Models\StoreAppDetailsResult.cs" />
-    <Compile Include="Services\SteamApiClient.cs" />
-    <Compile Include="Services\WebApiClient.cs" />
+    <Compile Include="SteamShared\MetadataProvider.cs" />
+    <Compile Include="SteamShared\SteamApiClient.cs" />
+    <Compile Include="SteamShared\SteamGameMetadata.cs" />
+    <Compile Include="SteamShared\StoreAppDetailsResult.cs" />
+    <Compile Include="SteamShared\WebApiClient.cs" />
     <Compile Include="UniversalSteamMetadata.cs" />
     <Compile Include="UniversalSteamMetadataProvider.cs" />
     <Compile Include="UniversalSteamMetadataSettings.cs" />

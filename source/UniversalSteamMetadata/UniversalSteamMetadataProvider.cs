@@ -4,6 +4,8 @@ using Playnite.SDK;
 using Playnite.SDK.Metadata;
 using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
+using Steam;
+using Steam.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using UniversalSteamMetadata.Models;
 
 namespace UniversalSteamMetadata
 {
@@ -216,10 +217,14 @@ namespace UniversalSteamMetadata
 
             try
             {
+                var metadataProvider = new MetadataProvider(plugin.ApiClient);
                 if (BuiltinExtensions.GetExtensionFromId(options.GameData.PluginId) == BuiltinExtension.SteamLibrary)
                 {
                     var appId = uint.Parse(options.GameData.GameId);
-                    currentMetadata = plugin.GetGameMetadata(appId);
+                    currentMetadata = metadataProvider.GetGameMetadata(
+                        appId,
+                        plugin.Settings.BackgroundSource,
+                        plugin.Settings.DownloadVerticalCovers);
                 }
                 else
                 {
@@ -228,7 +233,10 @@ namespace UniversalSteamMetadata
                         var matchedId = GetMatchingGame(options.GameData);
                         if (matchedId > 0)
                         {
-                            currentMetadata = plugin.GetGameMetadata(matchedId);
+                            currentMetadata = metadataProvider.GetGameMetadata(
+                                matchedId,
+                                plugin.Settings.BackgroundSource,
+                                plugin.Settings.DownloadVerticalCovers);
                         }
                         else
                         {
@@ -257,7 +265,10 @@ namespace UniversalSteamMetadata
                         }
                         else
                         {
-                            currentMetadata = plugin.GetGameMetadata(((StoreSearchResult)selectedGame).GameId);
+                            currentMetadata = metadataProvider.GetGameMetadata(
+                                ((StoreSearchResult)selectedGame).GameId,
+                                plugin.Settings.BackgroundSource,
+                                plugin.Settings.DownloadVerticalCovers);
                         }
                     }
                 }

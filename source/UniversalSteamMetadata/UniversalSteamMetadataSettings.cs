@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Playnite.SDK;
+using Steam;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +9,6 @@ using System.Threading.Tasks;
 
 namespace UniversalSteamMetadata
 {
-    public enum BackgroundSource
-    {
-        Image,
-        StoreScreenshot,
-        StoreBackground,
-        Banner
-    }
-
     public class UniversalSteamMetadataSettings : ISettings
     {
         private readonly UniversalSteamMetadata plugin;

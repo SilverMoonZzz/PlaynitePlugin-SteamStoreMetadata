@@ -6,13 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UniversalSteamMetadata.Models
+namespace Steam.Models
 {
-    public class StoreSearchResult : GenericItemOption
-    {
-        public uint GameId { get; set; }
-    }
-
     public class SteamDateConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -36,6 +31,11 @@ namespace UniversalSteamMetadata.Models
         {
             writer.WriteValue(value);
         }
+    }
+
+    public class StoreSearchResult : GenericItemOption
+    {
+        public uint GameId { get; set; }
     }
 
     public class StoreAppDetailsResult
