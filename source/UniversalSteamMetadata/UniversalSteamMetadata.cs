@@ -32,7 +32,6 @@ namespace UniversalSteamMetadata
             @"https://steamcdn-a.akamaihd.net/steam/apps/{0}/page_bg_generated.jpg"
         };
 
-        internal readonly SteamApiClient ApiClient = new SteamApiClient();
         internal UniversalSteamMetadataSettings Settings { get; set; }
 
         public override Guid Id { get; } = Guid.Parse("f2db8fb1-4981-4dc4-b087-05c782215b72");
@@ -62,7 +61,6 @@ namespace UniversalSteamMetadata
 
         public override void Dispose()
         {
-            ApiClient.Logout();
         }
 
         public override OnDemandMetadataProvider GetMetadataProvider(MetadataRequestOptions options)
