@@ -49,7 +49,8 @@ namespace UniversalSteamMetadata
             MetadataField.Links,
             MetadataField.Publishers,
             MetadataField.ReleaseDate,
-            MetadataField.Features
+            MetadataField.Features,
+            MetadataField.Name
         };
 
         public override string Name => "Steam Store";

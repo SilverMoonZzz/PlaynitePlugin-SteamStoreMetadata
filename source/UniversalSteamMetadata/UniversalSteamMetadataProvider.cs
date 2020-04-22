@@ -43,7 +43,8 @@ namespace UniversalSteamMetadata
             MetadataField.Links,
             MetadataField.Publishers,
             MetadataField.ReleaseDate,
-            MetadataField.Features
+            MetadataField.Features,
+            MetadataField.Name
         };
 
         public UniversalSteamMetadataProvider(MetadataRequestOptions options, UniversalSteamMetadata plugin)
@@ -63,6 +64,17 @@ namespace UniversalSteamMetadata
             {
                 logger.Error(e, "Failed to logout Steam client.");
             }
+        }
+
+        public override string GetName()
+        {
+            GetGameData();
+            if (currentMetadata.GameInfo != null)
+            {
+                return currentMetadata.GameInfo.Name;
+            }
+
+            return base.GetName();
         }
 
         public override string GetDescription()
