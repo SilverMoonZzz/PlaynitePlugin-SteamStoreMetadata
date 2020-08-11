@@ -1,12 +1,7 @@
-﻿// Copy from original Playnite repository
-//
-//    https://github.com/JosefNemec/Playnite/tree/master/source
-//
-// Any changes should be commited to original repository and backported here.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,6 +11,8 @@ namespace System
 {
     public static class StringExtensions
     {
+        private static readonly CultureInfo enUSCultInfo = new CultureInfo("en-US", false);
+
         public static string MD5(this string s)
         {
             using (var provider = System.Security.Cryptography.MD5.Create())
@@ -45,14 +42,14 @@ namespace System
             return newName;
         }
 
-        public static string RemoveTrademarks(this string str)
+        public static string RemoveTrademarks(this string str, string remplacement = "")
         {
             if (str.IsNullOrEmpty())
             {
                 return str;
             }
 
-            return Regex.Replace(str, @"[™©®]", string.Empty);
+            return Regex.Replace(str, @"[™©®]", remplacement);
         }
 
         public static bool IsNullOrEmpty(this string source)
@@ -65,7 +62,39 @@ namespace System
             return string.IsNullOrWhiteSpace(source);
         }
 
-        public static string NormalizeGameName(string name)
+        public static string Format(this string source, params object[] args)
+        {
+            return string.Format(source, args);
+        }
+
+        public static string TrimEndString(this string source, string value, StringComparison comp = StringComparison.Ordinal)
+        {
+            if (!source.EndsWith(value, comp))
+            {
+                return source;
+            }
+
+            return source.Remove(source.LastIndexOf(value, comp));
+        }
+
+        public static string ToTileCase(this string source, CultureInfo culture = null)
+        {
+            if (source.IsNullOrEmpty())
+            {
+                return source;
+            }
+
+            if (culture != null)
+            {
+                return culture.TextInfo.ToTitleCase(source);
+            }
+            else
+            {
+                return enUSCultInfo.TextInfo.ToTitleCase(source);
+            }
+        }
+
+        public static string NormalizeGameName(this string name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -77,6 +106,7 @@ namespace System
             newName = newName.Replace("_", " ");
             newName = newName.Replace(".", " ");
             newName = RemoveTrademarks(newName);
+            newName = newName.Replace('’', '\'');
             newName = Regex.Replace(newName, @"\[.*?\]", "");
             newName = Regex.Replace(newName, @"\(.*?\)", "");
             newName = Regex.Replace(newName, @"\s*:\s*", ": ");
