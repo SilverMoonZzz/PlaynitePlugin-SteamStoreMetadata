@@ -273,15 +273,35 @@ namespace UniversalSteamMetadata
                     {
                         var selectedGame = plugin.PlayniteApi.Dialogs.ChooseItemWithSearch(null, (a) =>
                         {
-                            try
+                            if (uint.TryParse(a, out var appId))
                             {
-                                var name = StringExtensions.NormalizeGameName(a);
-                                return new List<GenericItemOption>(UniversalSteamMetadata.GetSearchResults(name));
+                                try
+                                {
+                                    var store = WebApiClient.GetStoreAppDetail(appId);
+                                    return new List<GenericItemOption> { new StoreSearchResult
+                                    {
+                                        GameId = appId,
+                                        Name = store.name
+                                    }};
+                                }
+                                catch (Exception e)
+                                {
+                                    logger.Error(e, $"Failed to get Steam app info {appId}");
+                                    return new List<GenericItemOption>();
+                                }
                             }
-                            catch (Exception e)
+                            else
                             {
-                                logger.Error(e, $"Failed to get Steam search data for {a}");
-                                return new List<GenericItemOption>();
+                                try
+                                {
+                                    var name = StringExtensions.NormalizeGameName(a);
+                                    return new List<GenericItemOption>(UniversalSteamMetadata.GetSearchResults(name));
+                                }
+                                catch (Exception e)
+                                {
+                                    logger.Error(e, $"Failed to get Steam search data for {a}");
+                                    return new List<GenericItemOption>();
+                                }
                             }
                         }, options.GameData.Name, string.Empty);
 
