@@ -8,12 +8,14 @@ When downloading metadata while editing game, it will give you an option to spec
 Download
 ---------
 
-Check [releases](https://github.com/JosefNemec/PlaynitePlugin-SteamStoreMetadata/releases) page.
+Check [releases](https://github.com/JosefNemec/PlaynitePlugin-SteamStoreMetadata/releases) page and download `.pext` file attachment.
 
 Installation
 ---------
 
-Follow instructions from Playnite's [wiki page](https://github.com/JosefNemec/Playnite/wiki/Installing-scripts-and-plugins). Basically extract downloaded zip file to correct folder.
+Playnite 8 is now required since 1.4 update!
+
+Double click on the downloaded `.pext` file.
 
 After installation new `Steam Store` metadata source will be available on metadata download dialogs.
 
