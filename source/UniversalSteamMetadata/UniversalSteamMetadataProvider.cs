@@ -22,6 +22,16 @@ namespace UniversalSteamMetadata
         public class SteamImageOption : ImageFileOption
         {
             public string Image { get; set; }
+
+            public SteamImageOption()
+            {
+            }
+
+            public SteamImageOption(string imageUrl)
+            {
+                Image = imageUrl;
+                Path = imageUrl;
+            }
         }
 
         private static readonly ILogger logger = LogManager.GetLogger();
@@ -29,6 +39,7 @@ namespace UniversalSteamMetadata
         private readonly UniversalSteamMetadata plugin;
         private SteamGameMetadata currentMetadata;
         private readonly SteamApiClient apiClient;
+        private uint manualSteamId;
 
         public override List<MetadataField> AvailableFields { get; } = new List<MetadataField>
         {
@@ -93,11 +104,18 @@ namespace UniversalSteamMetadata
             GetGameData();
             if (currentMetadata.GameInfo != null)
             {
-                if (plugin.Settings.BackgroundSource == BackgroundSource.StoreScreenshot &&
-                    options.IsBackgroundDownload == false &&
-                    currentMetadata.StoreDetails?.screenshots?.Count > 1)
+                if (options.IsBackgroundDownload)
+                {
+                    return currentMetadata.BackgroundImage;
+                }
+                else
                 {
                     var selection = new List<ImageFileOption>();
+                    selection.Add(new SteamImageOption(string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/library_hero.jpg", manualSteamId)));
+                    selection.Add(new SteamImageOption(string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/page_bg_generated_v6b.jpg", manualSteamId)));
+                    selection.Add(new SteamImageOption(string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/page.bg.jpg", manualSteamId)));
+                    selection.Add(new SteamImageOption(string.Format(@"https://steamcdn-a.akamaihd.net/steam/apps/{0}/page_bg_generated.jpg", manualSteamId)));
+
                     foreach (var screen in currentMetadata.StoreDetails.screenshots)
                     {
                         selection.Add(new SteamImageOption
@@ -114,10 +132,6 @@ namespace UniversalSteamMetadata
                     {
                         return new MetadataFile(selected.Image);
                     }
-                }
-                else
-                {
-                    return currentMetadata.BackgroundImage;
                 }
             }
 
@@ -311,8 +325,9 @@ namespace UniversalSteamMetadata
                         }
                         else
                         {
+                            manualSteamId = ((StoreSearchResult)selectedGame).GameId;
                             currentMetadata = metadataProvider.GetGameMetadata(
-                                ((StoreSearchResult)selectedGame).GameId,
+                                manualSteamId,
                                 plugin.Settings.BackgroundSource,
                                 plugin.Settings.DownloadVerticalCovers);
                         }
