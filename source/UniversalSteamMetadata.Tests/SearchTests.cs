@@ -15,6 +15,7 @@ namespace UniversalSteamMetadata.Tests
         public void SearchPageParsingTest()
         {
             var results = UniversalSteamMetadata.GetSearchResults("doom");
+            Console.WriteLine("哈哈哈哈");
             CollectionAssert.IsNotEmpty(results);
             Assert.AreNotEqual(0, results[0].GameId);
             Assert.IsNotEmpty(results[0].Description);

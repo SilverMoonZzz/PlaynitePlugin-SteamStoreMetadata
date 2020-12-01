@@ -14,13 +14,13 @@ namespace Steam
     {
         public static AppReviewsResult GetUserRating(uint appId)
         {
-            var url = $"https://store.steampowered.com/appreviews/{appId}?json=1&purchase_type=all&language=all";
+            var url = $"https://store.steampowered.com/appreviews/{appId}?json=1&purchase_type=all&language=schinese";
             return JsonConvert.DeserializeObject<AppReviewsResult>(HttpDownloader.DownloadString(url));
         }
 
         public static StoreAppDetailsResult.AppDetails GetStoreAppDetail(uint appId)
         {
-            var url = $"https://store.steampowered.com/api/appdetails?appids={appId}&l=english";
+            var url = $"https://store.steampowered.com/api/appdetails?appids={appId}&l=schinese";
             var parsedData = JsonConvert.DeserializeObject<Dictionary<string, StoreAppDetailsResult>>(HttpDownloader.DownloadString(url));
             var response = parsedData[appId.ToString()];
 

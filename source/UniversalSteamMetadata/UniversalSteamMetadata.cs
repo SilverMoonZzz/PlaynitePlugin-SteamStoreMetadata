@@ -84,6 +84,7 @@ namespace UniversalSteamMetadata
             var results = new List<StoreSearchResult>();
             using (var webClient = new WebClient { Encoding = Encoding.UTF8 })
             {
+                webClient.Headers.Add("Cookie", "Steam_Language=schinese");
                 var searchPageSrc = webClient.DownloadString(string.Format(searchUrl, searchTerm));
                 var parser = new HtmlParser();
                 var searchPage = parser.Parse(searchPageSrc);
